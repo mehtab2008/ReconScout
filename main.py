@@ -18,6 +18,13 @@ headers = [
     "Content-Length",
     "Location"
 ]
+Security_headers = [
+    "Strict-Transport-Security",
+    "Content-Security-Policy",
+    "X-Content-Type-Options",
+    "X-Frame-Options",
+    "Referrer-Policy",
+]
 
 print("========================================")
 print("               RECON SCOUT              ")
@@ -35,19 +42,30 @@ except socket.gaierror:
     print(f"Unable to resolve hostname: {hostname}")
     exit(1)
 
+print("")
 print("HTTP check")
 print("------------------------------")
 response = check_status("http", hostname)
 
+print("")
 print("HTTPS check")
 print("------------------------------")
 response = check_status("https", hostname)
 
+print("")
 print("Headers check")
 print("------------------------------")
-#print(dir(response))
 for header in headers:
     if response and header in response.headers:
         print(f"{header}: {response.headers[header]}")
     else:
         print(f"{header}: Not found")
+
+print("")
+print("Security Headers check")
+print("------------------------------")
+for header in Security_headers:
+    if response and header in response.headers:
+        print(f"{header}: Present")
+    else:
+        print(f"{header}: Missing")
