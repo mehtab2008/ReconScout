@@ -4,17 +4,20 @@ import requests
 def check_status(protocol, hostname):
     try:
         response = requests.get(f"{protocol}://{hostname}", timeout=10)
-        if response.status_code == 200:
-            print(f"Status Code: {response.status_code} - Reason : OK")
-        elif response.status_code == 301:
-            print(f"Status Code: {response.status_code} - Reason : Moved Permanently")
-        elif response.status_code == 403:
-            print(f"Status Code: {response.status_code} - Reason : Forbidden")
-        elif response.status_code == 404:
-            print(f"Status Code: {response.status_code} - Reason : Not Found")
-        return 0
+        print("Status Code:", response.status_code)
+        print(f"Reason : {response.reason}")
+        return response
+        
     except requests.RequestException:
-        return False
+        print(f"Unable to connect to {protocol}://{hostname}")
+        return None
+
+headers = [
+    "Server",
+    "Content-Type",
+    "Content-Length",
+    "Location"
+]
 
 print("========================================")
 print("               RECON SCOUT              ")
@@ -34,8 +37,17 @@ except socket.gaierror:
 
 print("HTTP check")
 print("------------------------------")
-check_status("http", hostname)
+response = check_status("http", hostname)
 
 print("HTTPS check")
 print("------------------------------")
-check_status("https", hostname)
+response = check_status("https", hostname)
+
+print("Headers check")
+print("------------------------------")
+#print(dir(response))
+for header in headers:
+    if response and header in response.headers:
+        print(f"{header}: {response.headers[header]}")
+    else:
+        print(f"{header}: Not found")
