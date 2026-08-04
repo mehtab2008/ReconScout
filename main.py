@@ -1,100 +1,42 @@
-import socket
-import requests
+from modules.headers import print_header_summary, summarize_headers
+from modules.network import check_status, resolve_hostname
+from modules.utils import print_banner, print_section
+from modules.webfiles import print_webfile_checks
+from modules.ssl_info import collect_ssl_info
 
-def check_status(protocol, hostname):
+
+def main():
+    print_banner()
+
+    hostname = input("Enter the hostname: ").strip()
+
     try:
-        response = requests.get(f"{protocol}://{hostname}", timeout=10)
-        print("Status Code:", response.status_code)
-        print(f"Reason : {response.reason}")
-        return response
-        
-    except requests.RequestException:
-        print(f"Unable to connect to {protocol}://{hostname}")
-        return None
+        ip_addr = resolve_hostname(hostname)
+    except ValueError as error:
+        print(error)
+        return
 
-headers = [
-    "Server",
-    "Content-Type",
-    "Content-Length",
-    "Location"
-]
-security_headers = [
-    "Strict-Transport-Security",
-    "Content-Security-Policy",
-    "X-Content-Type-Options",
-    "X-Frame-Options",
-    "Referrer-Policy",
-]
-
-print("========================================")
-print("               RECON SCOUT              ")
-print("========================================")
-
-hostname = input("Enter the hostname: ").strip()
-
-try:
-    ip_addr = socket.gethostbyname(hostname)
-    print("\nTarget Information")
-    print("------------------------------")
+    print_section("Target Information")
     print(f"Hostname : {hostname}")
     print(f"IP Address: {ip_addr}")
-except socket.gaierror:
-    print(f"Unable to resolve hostname: {hostname}")
-    exit(1)
 
-print()
-print("HTTP check")
-print("------------------------------")
-response = check_status("http", hostname)
+    print_section("HTTP check")
+    response = check_status("http", hostname)
 
-print()
-print("HTTPS check")
-print("------------------------------")
-response = check_status("https", hostname)
+    print_section("HTTPS check")
+    response = check_status("https", hostname)
 
-print()
-print("Headers check")
-print("------------------------------")
-for header in headers:
-    if response and header in response.headers:
-        print(f"{header:<20}: {response.headers[header]}")
-    else:
-        print(f"{header:<20}: Not found")
+    print_section("Headers check")
+    summary = summarize_headers(response)
+    print_header_summary(summary)
 
-print()
-print("Security Headers check")
-print("------------------------------")
-for header in security_headers:
-    if response and header in response.headers:
-        print(f"{header:<30}: Present")
-    else:
-        print(f"{header:<30}: Missing")
+    print_webfile_checks(hostname)
 
+    print_section("SSL/TLS Information")
+    ssl_info = collect_ssl_info(hostname)
+    for key, value in ssl_info.items():
+        print(f"{key}: {value}")
 
-print()
-print("robots.txt check")
-print("------------------------------")
-robots_response = check_status("http", f"{hostname}/robots.txt")
-if robots_response and robots_response.status_code == 200:
-    print("\nrobots.txt content (first 10 lines):")
-    print("------------------------------")
-    lines = robots_response.text.splitlines()
-    for line in lines[:10]:
-        print(line)
-else:
-    print("robots.txt not found or inaccessible.")
-
-print()
-print("sitemap.xml check")
-print("------------------------------")
-sitemap_response = check_status("http", f"{hostname}/sitemap.xml")
-if sitemap_response and sitemap_response.status_code == 200:
-    print("\nsitemap.xml content (first 10 lines):")
-    print("------------------------------")
-    lines = sitemap_response.text.splitlines()
-    for line in lines[:10]:
-        print(line)
-else:
-    print("sitemap.xml not found or inaccessible.")
-
+if __name__ == "__main__":
+    main()
 
