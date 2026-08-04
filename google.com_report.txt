@@ -1,0 +1,11 @@
+Report for google.com
+
+IP Address: 142.250.202.46
+
+Open Ports: None
+
+DNS Records: {'A': ['142.250.202.46'], 'AAAA': ['2a00:1450:4018:80f::200e'], 'MX': ['10 smtp.google.com.'], 'NS': ['ns4.google.com.', 'ns2.google.com.', 'ns1.google.com.', 'ns3.google.com.'], 'CNAME': []}
+
+SSL/TLS Info: {'Issuer': {'countryName': 'US', 'organizationName': 'Google Trust Services', 'commonName': 'WR2'}, 'Subject': {'commonName': '*.google.com'}, 'Valid From': 'Jun 29 08:37:25 2026 GMT', 'Expires': 'Sep 21 08:37:24 2026 GMT'}
+
+Headers Summary: {'common': {'Server': 'gws', 'Content-Type': 'text/html; charset=ISO-8859-1', 'Content-Length': 'Not found', 'Location': 'Not found'}, 'security': {'Strict-Transport-Security': 'Missing', 'Content-Security-Policy': 'Missing', 'X-Content-Type-Options': 'Missing', 'X-Frame-Options': 'Present', 'Referrer-Policy': 'Missing'}}
